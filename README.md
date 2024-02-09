@@ -1,7 +1,7 @@
 # Nino: an assistat for the Designing With Discord channel
 Nino is entirely developed using [Pycord](https://docs.pycord.dev/) and hosted on [Plexynodes](https://client.pylexnodes.net/).
 
-![ninobot](http://url/to/img.png)
+![ninobot](https://raw.githubusercontent.com/zumatt/ninoBot/main/assets/ninoBotAvatar.jpg)
 
 The capabilites are the following:
   - Command to send messages via a specific channel only for admin users;
