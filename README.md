@@ -8,3 +8,8 @@ The capabilites are the following:
   - Welcome user as soon as they join the server;
   - Reaction to messages sent on specific channels;
   - More soon...
+
+## Examples and findings
+'''
+import discord
+'''
