@@ -36,9 +36,9 @@ async def your_command_error(ctx, error):
 
 
 @bot.command(name="ninoaudio", description="Generate audio tracks from text")
-@commands.check_any(commands.has_role(1121063615106142329)) #, commands.has_role(1204421985443258498)
+@commands.check_any(commands.has_role(1121063615106142329), commands.has_role(1204421985443258498))
 async def add(ctx, model: discord.Option(str, "Choose your model", choices=["facebook/magnet-small-10secs", "facebook/magnet-medium-10secs", "facebook/magnet-small-30secs", "facebook/magnet-medium-30secs", "facebook/audio-magnet-small", "facebook/audio-magnet-medium"]), prompt: discord.Option(str)):
-    await ctx.respond(f'<:NinoBlue:1205472560842539028> successfuly added in queue! \n Your audio generation with the prompt "{prompt}" using the model {model} has started, in approx. 45s will be available!', ephemeral=True)
+    await ctx.respond(f'<:NinoBlue:1205472560842539028> successfuly added in queue!\nYour audio generation with the prompt `{prompt}` using the model {model} has started, in approx. 45s will be available!', ephemeral=True)
     result = client.predict(
 		model,	# Literal['facebook/magnet-small-10secs', 'facebook/magnet-medium-10secs', 'facebook/magnet-small-30secs', 'facebook/magnet-medium-30secs', 'facebook/audio-magnet-small', 'facebook/audio-magnet-medium']  in 'Model' Radio component
 		"",	# str  in 'Model Path (custom models)' Textbox component
@@ -69,9 +69,9 @@ async def add(ctx, model: discord.Option(str, "Choose your model", choices=["fac
         result_paths.append(path)
 
     try:
+        await ctx.respond(f"<:NinoBlue:1205472560842539028> `{prompt}` generated using the MAGNeT model `{model}` by <@{ctx.author.id}>")
         for index, path in enumerate(result_paths):
             with open(path, 'rb') as fp:
-                await ctx.respond(f"<:NinoBlue:1205472560842539028> {prompt} generated as result #{index} using the MAGNeT model {model} by <@{ctx.author.id}>")
                 await ctx.followup.send(file=File(fp, f"{prompt}_{ctx.author}_output_{index}.wav"))
                 os.remove(path)
                 parent_folders.append(os.path.dirname(path))
