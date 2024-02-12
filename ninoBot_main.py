@@ -14,7 +14,7 @@ bot = discord.Bot(intents=intents)
 
 @bot.event
 async def on_ready():
-    global clientMAGNeT, magnetAvailable
+    global clientMAGNeT, magnetAvailable, clientLLaMa, llamaAvailable
     
     try:
         clientMAGNeT = Client("https://fffiloni-magnet.hf.space/--replicas/58jap/")
@@ -22,10 +22,17 @@ async def on_ready():
     except Exception as e:
         print(f"Failed to connect to MAGNet: {str(e)}")
         magnetAvailable = False
+    
+    try:
+        clientLLaMa = Client("https://ysharma-explore-llamav2-with-tgi.hf.space/--replicas/brc3o/")
+        llamaAvailable = True
+    except Exception as e:
+        print(f"Failed to connect to MAGNet: {str(e)}")
+        llamaAvailable = False
 
     print(f'{bot.user} has connected to Discord!')
 
-@bot.command(name="ninotalk", description="Send a message with Nino to a specific channel")
+@bot.command(name="ninowrite", description="Send a message with Nino to a specific channel")
 @commands.has_role(1121063615106142329)
 # pycord will figure out the types for you
 async def add(ctx, channel: discord.TextChannel, message: discord.Option(str)):
@@ -38,7 +45,7 @@ async def your_command_error(ctx, error):
         await ctx.respond("You can use the `/ninotalk` command only if you are part of <@&1121063615106142329>", ephemeral=True)
 
 
-@bot.command(name="ninoaudio", description="Generate audio tracks from text")
+@bot.command(name="ninoplay", description="Generate audio tracks from text")
 @commands.check_any(commands.has_role(1121063615106142329), commands.has_role(1204421985443258498))
 async def add(ctx, model: discord.Option(str, "Choose your model", choices=["facebook/magnet-small-10secs", "facebook/magnet-medium-10secs", "facebook/magnet-small-30secs", "facebook/magnet-medium-30secs", "facebook/audio-magnet-small", "facebook/audio-magnet-medium"]), prompt: discord.Option(str)):
     if magnetAvailable:
@@ -93,7 +100,41 @@ async def add(ctx, model: discord.Option(str, "Choose your model", choices=["fac
 async def your_command_error(ctx, error):
     if isinstance(error, commands.CheckFailure):
         await ctx.respond("You can use the `/ninoaudio` command only if you are part of <@&1121063615106142329> or <@&1121063615106142329>", ephemeral=True)
-    
+
+@bot.command(name="ninochat", description="Nino LLm chatbot based on LLaMa") 
+@commands.check_any(commands.has_role(1121063615106142329), commands.has_role(1204421985443258498))
+async def add(ctx, model: discord.Option(str, "Choose your model", choices=["llama-2-70b-chat"]), prompt: discord.Option(str)):
+    if llamaAvailable:
+        await ctx.respond(f'<:NinoBlue:1205472560842539028> successfuly added in queue!\nYour text with the prompt `{prompt}` using the model `{model}` has started, in approx. 24s will be available!', ephemeral=True)
+        
+        result = clientLLaMa.predict(
+            prompt,	# str  in 'parameter_7' Textbox component
+            "",	# str  in 'Optional system prompt' Textbox component
+            0.2,	# float (numeric value between 0.0 and 1.0) in 'Temperature' Slider component
+            1024,	# float (numeric value between 0 and 4096) in 'Max new tokens' Slider component
+            0.9,	# float (numeric value between 0.0 and 1) in 'Top-p (nucleus sampling)' Slider component
+            1.2,	# float (numeric value between 1.0 and 2.0) in 'Repetition penalty' Slider component
+            api_name="/chat"
+        )
+
+        print(f"{prompt} from {ctx.author} generated!")
+
+        try:
+            message_prefix = f"<:NinoBlue:1205472560842539028> the answer to the <@{ctx.author.id}>:\n"
+            max_length = 2000 - len(message_prefix) - 10
+            chunks = [result[i:i+max_length] for i in range(0, len(result), max_length)]
+            await ctx.respond(message_prefix)
+            for chunk in chunks:
+                await ctx.followup.send(f"{chunk}\n")
+        except Exception as e:
+            await ctx.respond(f"Failed to retrieve the answer: {str(e)}", ephemeral=True)
+    else:
+        await ctx.respond("The LLaMa service is currently unavailable, please try again later.", ephemeral=True)
+
+@add.error
+async def your_command_error(ctx, error):
+    if isinstance(error, commands.CheckFailure):
+        await ctx.respond("You can use the `/ninochat` command only if you are part of <@&1121063615106142329> or <@&1121063615106142329>", ephemeral=True)
 
 @bot.event
 async def on_member_join(member):
