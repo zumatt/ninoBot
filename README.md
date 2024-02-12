@@ -7,9 +7,18 @@ The capabilites are the following:
   - Command to send messages via a specific channel only for admin users;
   - Welcome user as soon as they join the server;
   - Reaction to messages sent on specific channels;
-  - More soon...
+  - Capability to generate audio and song using MAGNeT;
+  - Capability to generate text using LLaMa.
 
-## Examples and findings
-'''
-import discord
-'''
+## Code breakout and examples
+_More explanation will arrive soon..._
+
+In order to catch events on the Discord Server you need to set the intents for what you need to check for as True
+```
+intents = discord.Intents.default()
+intents.members = True
+intents.messages = True
+
+bot = discord.Bot(intents=intents)
+```
+
