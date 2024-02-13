@@ -4,8 +4,13 @@ from discord.ext import commands
 from gradio_client import Client
 import os
 import sys
-from ninoSecret import ninoToken
+import threading
+from threading import Event
+import gradio as gr
 
+event = Event()
+
+ninoToken = os.getenv('ninoToken')
 
 # Initialize the bot with the intents
 intents = discord.Intents.default()
@@ -21,7 +26,7 @@ async def on_ready():
     global clientMAGNeT, magnetAvailable, clientLLaMa, llamaAvailable
     
     try:
-        clientMAGNeT = Client("https://fffiloni-magnet.hf.space/--replicas/58jap/")
+        clientMAGNeT = Client("https://fffiloni-magnet.hf.space/--replicas/f8oje/")
         magnetAvailable = True
     except Exception as e:
         print(f"Failed to connect to MAGNet: {str(e)}")
@@ -33,7 +38,7 @@ async def on_ready():
     except Exception as e:
         print(f"Failed to connect to MAGNet: {str(e)}")
         llamaAvailable = False
-
+    event.set()
     print(f'{bot.user} has connected to Discord!')
 
 # Function to trigger the command /ninowrite
@@ -197,8 +202,31 @@ async def on_message(message):
     if message.channel.name == "🚀┊risultati":
         await message.add_reaction("🚀")
 
+
 # -----------------------------------------------------------
 # Run the bot in a loop
-bot.run(ninoToken)
+def run_bot():
+    if not ninoToken:
+        print("ninoToken NOT SET")
+        event.set()
+    else:
+        bot.run(ninoToken)
 
 
+threading.Thread(target=run_bot).start()
+event.wait()
+
+welcome_message = """
+## This is Nino the bot for the Designing With Server.
+You can find more info here: https://github.com/zumatt/ninoBot 
+⚠️ Note ⚠️: The bot is only working on the Designing With Discord Server.
+"""
+
+
+with gr.Blocks() as demo:
+    gr.Markdown(f"""
+    # Discord bot of the Designing With Server
+    {welcome_message}
+    """)
+
+demo.launch()
