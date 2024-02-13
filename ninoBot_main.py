@@ -3,9 +3,9 @@ from discord import File
 from discord.ext import commands
 from gradio_client import Client
 import os
+import sys
+from ninoSecret import ninoToken
 
-# Set the token for the discord bot
-ninoToken = "Discord_Bot_Token"
 
 # Initialize the bot with the intents
 intents = discord.Intents.default()
@@ -149,6 +149,22 @@ async def ninochat(ctx,
 async def your_command_error(ctx, error):
     if isinstance(error, commands.CheckFailure):
         await ctx.respond("You can use the `/ninochat` command only if you are part of <@&1121063615106142329> or <@&1121063615106142329>", ephemeral=True)
+
+# Function to trigger the command /restart
+@bot.command(name="restart", description="Restart the bot")
+@commands.has_role(1121063615106142329)
+async def restart(ctx):
+    await ctx.send("I'm taking a power nap! <:NinoBlue:1205472560842539028>\nI'll be back in a moment!")
+    await bot.logout()
+    await bot.close()
+    python = sys.executable
+    os.execl(python, python, *sys.argv)
+
+# Check for errors in the /ninochat command
+@restart.error
+async def your_command_error(ctx, error):
+    if isinstance(error, commands.CheckFailure):
+        await ctx.respond("You can use the `/restart` command only if you are part of <@&1121063615106142329>", ephemeral=True)
 
 # Function that is triggered when a member joins the server
 @bot.event
