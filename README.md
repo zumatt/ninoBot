@@ -1,4 +1,6 @@
 # Nino: an assistat for the Designing With Discord channel
+[![Deploy on Spaces](https://huggingface.co/datasets/huggingface/badges/resolve/main/deploy-on-spaces-md.svg)](https://huggingface.co/spaces/zumat/ninoBot)
+
 Nino is entirely developed using [Pycord](https://docs.pycord.dev/) and hosted on [Plexynodes](https://client.pylexnodes.net/).
 
 ![ninobot](https://raw.githubusercontent.com/zumatt/ninoBot/main/assets/ninoBotAvatar.jpg)
