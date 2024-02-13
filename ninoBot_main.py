@@ -5,7 +5,6 @@ from gradio_client import Client
 import os
 import sys
 from ninoSecret import ninoToken
-import time
 
 
 # Initialize the bot with the intents
@@ -36,23 +35,6 @@ async def on_ready():
         llamaAvailable = False
 
     print(f'{bot.user} has connected to Discord!')
-
-# Rate limiter class
-class RateLimiter:
-    def __init__(self, max_requests, period):
-        self.max_requests = max_requests
-        self.period = period
-        self.requests = []
-
-    def add_request(self):
-        current_time = time.time()
-        self.requests.append(current_time)
-
-        while self.requests and self.requests[0] < current_time - self.period:
-            self.requests.pop(0)
-
-    def can_make_request(self):
-        return len(self.requests) < self.max_requests
 
 # Function to trigger the command /ninowrite
 @bot.command(name="ninowrite", description="Send a message with Nino to a specific channel")
@@ -214,17 +196,6 @@ async def on_message(message):
     
     if message.channel.name == "🚀┊risultati":
         await message.add_reaction("🚀")
-
-
-#Limit the requests to the bot
-rate_limiter = RateLimiter(10, 1)  # 10 requests per second
-
-# Before making a request
-if rate_limiter.can_make_request():
-    rate_limiter.add_request()
-    # Make the request
-else:
-    print("Rate limit exceeded, waiting...")
 
 # -----------------------------------------------------------
 # Run the bot in a loop
